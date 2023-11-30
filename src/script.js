@@ -1,5 +1,6 @@
 const checkStatus = (response) => {
   if (response.ok) {
+    // .ok returns true if response status is 200-299
     return response;
   }
   throw new Error('Request was either a 404 or 500');
@@ -8,7 +9,14 @@ const checkStatus = (response) => {
 const json = (response) => response.json()
 
 const Movie = (props) => {
-  const { Title, Year, imdbID, Type, Poster } = props.movie;
+  const {
+    Title,
+    Year,
+    imdbID,
+    Type,
+    Poster,
+  } = props.movie;
+
   return (
     <div className="row">
       <div className="col-4 col-md-3 mb-3">
@@ -51,24 +59,27 @@ class MovieFinder extends React.Component {
       return;
     }
 
-    fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=8a8ac2b4`)
+    fetch(`https://www.omdbapi.com/?s=${searchTerm}&apikey=8a8ac2b4`)
       .then(checkStatus)
       .then(json)
-      .then(data => {
+      .then((data) => {
         if (data.Response === 'False') {
           throw new Error(data.Error);
         }
+
         if (data.Response === 'True' && data.Search) {
           this.setState({ results: data.Search, error: '' });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         this.setState({ error: error.message });
         console.log(error);
-      })}
+      })
+  }
 
   render() {
     const { searchTerm, results, error } = this.state;
+
     return (
       <div className="container">
         <div className="row">
@@ -101,3 +112,4 @@ class MovieFinder extends React.Component {
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
 root.render(<MovieFinder />);
+
